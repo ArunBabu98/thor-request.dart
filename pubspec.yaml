@@ -1,7 +1,7 @@
 name: thor_request_dart
 description: This package enables you to talk to VeChain blockchain without hassle. 
 version: 1.1.0
-repository: https://github.com/SayNode/thor-request.dart/tree/master/thor_request_dart
+publish_to: none
 
 environment:
   sdk: "^3.0.0"
@@ -15,7 +15,10 @@ dependencies:
   http: ^1.1.0
   nock: ^1.2.3
   pointycastle: ^3.7.3
-  thor_devkit_dart: ^1.1.0
+  thor_devkit_dart:
+    git:
+      url: https://github.com/ArunBabu98/thor-devkit.dart
+      ref: securus
 
 
 dev_dependencies:

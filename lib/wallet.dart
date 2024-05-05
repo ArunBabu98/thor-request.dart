@@ -21,7 +21,6 @@ class Wallet {
     pub = secp256k1.derivePublicKey(bytesToInt(priv), false);
     adressBytes = Address.publicKeyToAddressBytes(pub);
     adressString = Address.publicKeyToAddressString(pub);
-    
   }
 
   ///Generate Wallet from Mnemonic phrase
@@ -34,12 +33,17 @@ class Wallet {
     return Wallet(priv);
   }
 
+  ///Generate Wallet from seed
+  static Wallet fromSeed(Uint8List seed) {
+    var priv = Mnemonic.derivePrivateKeyFromSeed(seed);
+    return Wallet(priv);
+  }
+
   ///Generate Wallet from [keyStore]
   ///[keyStore] is a jsonString
   static Wallet fromKeystore(String keyStore, String password) {
     var priv = Keystore.decrypt(keyStore, password);
     return Wallet(priv);
-    
   }
 
   ///create new wallet from scratch
@@ -52,7 +56,6 @@ class Wallet {
     var sig = secp256k1.sign(msgHash, priv);
     return sig.serialize();
   }
-
 
   ///verify if the signature [sig] and message hash [msgHash] were signed by the privte key of this wallet
   bool verifySignature(Uint8List msgHash, Uint8List sig) {
