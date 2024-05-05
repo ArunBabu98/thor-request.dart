@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:thor_devkit_dart/function.dart';
 import 'package:thor_request_dart/contract.dart';
 
