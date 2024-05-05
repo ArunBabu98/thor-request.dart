@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:convert/convert.dart';
+import 'package:pointycastle/digests/keccak.dart';
 import 'package:thor_devkit_dart/crypto/address.dart';
 import 'package:thor_devkit_dart/crypto/blake2b.dart';
 import 'package:thor_devkit_dart/crypto/secp256k1.dart';
@@ -165,15 +167,14 @@ Map injectDecodedReturn(
     return emulateResponse;
   }
 
-  if ((emulateResponse["data"] == null) ||
-      (emulateResponse["data"] == "0x")) {
+  if ((emulateResponse["data"] == null) || (emulateResponse["data"] == "0x")) {
     return emulateResponse;
   }
   var functionObj = contract.getFunctionByName(funcName);
   var wrapperList = functionObj.decodeReturnV1(emulateResponse["data"]);
   Map decoded = {};
   for (var i = 0; i < wrapperList.length; i++) {
-    decoded[i] =  wrapperList[i].value;
+    decoded[i] = wrapperList[i].value;
   }
   // for (var obj in wrapperList) {
   //   decoded[obj.name] = obj.value;
@@ -264,7 +265,6 @@ Transaction calcTxSignedWithFeeDelegation(
   return tx;
 }
 
-
 ///ABI encode params according to types
 Uint8List buildParams(List<String> types, List args) {
   if (types.length != args.length) {
@@ -278,4 +278,31 @@ Uint8List buildParams(List<String> types, List args) {
   }
 
   return Uint8List.fromList(out);
+}
+
+String convertToCheckSumAddress(String address) {
+  address = address.toLowerCase();
+  // Remove the '0x' prefix if it exists
+  if (address.startsWith('0x')) {
+    address = address.substring(2);
+  }
+  // Create a Keccak256 hasher
+  final hasher = KeccakDigest(256);
+
+  // Calculate the checksum hash using Keccak-256
+  final Uint8List addressBytes = Uint8List.fromList(utf8.encode(address));
+  final Uint8List hashBytes = hasher.process(addressBytes);
+  final checksumHash = hex.encode(hashBytes);
+
+  // Create the checksum address by applying the checksum rules
+  String checksumAddress = '0x';
+  for (int i = 0; i < address.length; i++) {
+    if (int.parse(checksumHash[i], radix: 16) >= 8) {
+      checksumAddress += address[i].toUpperCase();
+    } else {
+      checksumAddress += address[i];
+    }
+  }
+
+  return checksumAddress;
 }
